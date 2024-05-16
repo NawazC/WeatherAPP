@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather</title>
+</head>
+<body>
+
+    <style>
+        #image-of-day{
+            width:200px;
+            height:400px
+        }
+        .image-area{
+            text-align: center;
+        }
+
+        .image-area p{
+            font-weight: bold;
+            font-size: 30px;
+            color: blueviolet;
+        }
+    </style>
+
+    <div class="image-area">
+
+        <p id="msg">Welcome, It's </p>
+        <img src="Morning.png" id="image-of-day" alt="">
+
+        <h1 id="currentTemp"></h1>
+        <h1 id="maxTemp"></h1>
+        <h1 id="minTemp"></h1>
+        
+    </div>
+
+
+    <script>
+
+
+let currentDate = new Date();
+let am_pm = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format HH:MM
+console.log(am_pm); // Example output: "12:48 PM"\
+
+let newDate = new Date();
+let currentHour = newDate.getHours(); // Get the current hour (0-23)
+
+let periodOfDay = (currentHour >= 12) ? 'PM' : 'AM';
+//console.log(periodOfDay)
+
+// Extract hour from the time string
+let timeString = am_pm;
+let hour = parseInt(timeString.split(':')[0]);
+
+// Determine the time of day based on the hour
+let timeOfDay;
+
+if(periodOfDay=="AM"){
+        if (hour >= 1 && hour < 7) {
+        timeOfDay = "night";
+        document.getElementById("msg").innerHTML="Welcome, It's night Now";
+        document.getElementById("image-of-day").src="Night.png";
+    } else if (hour >= 7 && hour < 10) {
+        timeOfDay = "Morning";
+        document.getElementById("msg").innerHTML="Welcome, It's Morning Now";
+        document.getElementById("image-of-day").src="Morning.png";
+    }else if (hour >= 11 && hour < 12) {
+        timeOfDay = "Afternoon";
+        document.getElementById("msg").innerHTML="Welcome, It's Afternoon Now";
+        document.getElementById("image-of-day").src="Afternoon.png";
+    }else {
+        timeOfDay = "night";
+        document.getElementById("msg").innerHTML="Welcome, It's night Now";
+        document.getElementById("image-of-day").src="Night.png";
+         
+    }
+}else{
+    if (hour >= 1 && hour < 5) {
+    timeOfDay = "Afternoon";
+    document.getElementById("msg").innerHTML="Welcome, It's Afternoon Now";
+    document.getElementById("image-of-day").src="Afternoon.png";
+} else if (hour >= 6 && hour < 8) {
+    timeOfDay = "Evening";
+    document.getElementById("msg").innerHTML="Welcome, It's Evening Now";
+    document.getElementById("image-of-day").src="Evening.png";
+}else if (hour >= 8 && hour < 12) {
+    timeOfDay = "Night";
+    document.getElementById("msg").innerHTML="Welcome, It's Night Now";
+    document.getElementById("image-of-day").src="Night.png";
+}else {
+    timeOfDay = "night";
+    document.getElementById("msg").innerHTML="Welcome, It's night Now";
+    document.getElementById("image-of-day").src="Night.png";
+    alert(am_pm)
+}
+}
+
+
+
+
+
+//console.log(`It's currently ${timeOfDay}.`);
+
+        const fetchData = async () => {
+            //const url = 'https://open-weather13.p.rapidapi.com/city/toronto/EN';
+            const options = {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': 'YOUR_API_KEY',
+                    'X-RapidAPI-Host': 'open-weather13.p.rapidapi.com'
+                }
+            };
+
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                console.log(data)
+
+                // Extract temperature data from the API response
+                const currentTempFahrenheit = data.main.temp;
+                const maxTempFahrenheit = data.main.temp_max;
+                const minTempFahrenheit = data.main.temp_min;
+
+                // Convert temperatures from Fahrenheit to Celsius
+                const currentTempCelsius = (currentTempFahrenheit - 32) * (5/9);
+                const maxTempCelsius = (maxTempFahrenheit - 32) * (5/9);
+                const minTempCelsius = (minTempFahrenheit - 32) * (5/9);
+
+                // Update HTML content with converted temperatures
+                document.getElementById('currentTemp').textContent = `Current Temperature: ${currentTempCelsius.toFixed(2)}°C`;
+                document.getElementById('maxTemp').textContent = `Maximum Temperature: ${maxTempCelsius.toFixed(2)}°C`;
+                document.getElementById('minTemp').textContent = `Minimum Temperature: ${minTempCelsius.toFixed(2)}°C`;
+            } catch (error) {
+                console.error('Error fetching weather data:', error);
+                // Display error message if there's an issue fetching data
+                document.getElementById('currentTemp').textContent = 'Error fetching weather data';
+            }
+        };
+
+        // Call the async function to fetch and display weather data
+        fetchData();
+    </script>
+</body>
+</html>
